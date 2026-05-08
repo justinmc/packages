@@ -22,6 +22,9 @@ dev_dependencies:
     path: ../../script/flutter_goldens
   flutter_test:
     sdk: flutter
+  material_ui:
+    # TODO(justinmc): Use the pub.dev package when published.
+    path: ../material_ui
 
 topics:
   - ui
