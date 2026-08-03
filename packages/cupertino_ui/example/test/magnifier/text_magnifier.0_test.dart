@@ -54,6 +54,15 @@ void main() {
     assert(textOffset >= 0);
     final Offset tapOffset = _textOffsetToPosition(tester, textOffset);
 
+    /*
+    await tester.tap(find.byType(CupertinoTextField));
+    await tester.pump();
+    await tester.pumpAndSettle();
+    await tester.pump();
+    */
+
+    // TODO(justinmc): Why does it lose focus? Add some print statements here to figure out when it loses focus.
+
     // Double tap 'Magnifier' word to show the selection handles.
     final TestGesture testGesture = await tester.startGesture(tapOffset);
     await tester.pump(durationBetweenActions);
@@ -79,7 +88,10 @@ void main() {
 
     final TestGesture gesture = await tester.startGesture(handlePos);
 
-    await gesture.moveTo(_textOffsetToPosition(tester, defaultText.length - 2));
+    //await gesture.moveTo(_textOffsetToPosition(tester, defaultText.length - 2));
+    await gesture.moveTo(handlePos + Offset(50.0, 0.0));
+    await tester.pump();
+    await tester.pumpAndSettle();
     await tester.pump();
   }
 
@@ -113,8 +125,9 @@ void main() {
       const example.TextMagnifierExampleApp(textDirection: .rtl, text: text),
     );
 
-    await showMagnifier(tester, text.indexOf(textToTapOn));
+    //await showMagnifier(tester, text.indexOf(textToTapOn));
+    await showMagnifier(tester, 3);
 
     expect(find.byType(example.CustomMagnifier), findsOneWidget);
-  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+  }, variant: TargetPlatformVariant.mobile());
 }

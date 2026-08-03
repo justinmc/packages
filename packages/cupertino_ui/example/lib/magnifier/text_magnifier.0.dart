@@ -26,6 +26,7 @@ class TextMagnifierExampleApp extends StatelessWidget {
           padding: const .symmetric(horizontal: 48.0),
           child: Center(
             child: CupertinoTextField(
+              //autofocus: true,
               textDirection: textDirection,
               // Create a custom magnifier configuration that
               // this `TextField` will use to build a magnifier with.
