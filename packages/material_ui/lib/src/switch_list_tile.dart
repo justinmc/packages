@@ -248,6 +248,7 @@ class SwitchListTile extends StatelessWidget {
     this.minTileHeight,
     this.hoverColor,
     this.internalAddSemanticForOnTap = false,
+    this.mergeSemantics = true,
   }) : _switchListTileType = _SwitchListTileType.material,
        applyCupertinoTheme = false,
        assert(activeThumbImage != null || onActiveThumbImageError == null),
@@ -316,6 +317,7 @@ class SwitchListTile extends StatelessWidget {
     this.minTileHeight,
     this.hoverColor,
     this.internalAddSemanticForOnTap = false,
+    this.mergeSemantics = true,
   }) : _switchListTileType = _SwitchListTileType.adaptive,
        assert(isThreeLine != true || subtitle != null),
        assert(activeThumbImage != null || onActiveThumbImageError == null),
@@ -579,6 +581,10 @@ class SwitchListTile extends StatelessWidget {
   ///  * [Feedback] for providing platform-specific feedback to certain actions.
   final bool? enableFeedback;
 
+  /// Whether to wrap the List Tile in a MergeSemantics.
+  /// Default is true.
+  final bool mergeSemantics;
+
   /// {@macro material_ui.ListTile.horizontalTitleGap}
   final double? horizontalTitleGap;
 
@@ -683,8 +689,7 @@ class SwitchListTile extends StatelessWidget {
         activeColor ??
         switchTheme.thumbColor?.resolve(states) ??
         theme.colorScheme.secondary;
-    return MergeSemantics(
-      child: ListTile(
+    final Widget tile = ListTile(
         selectedColor: effectiveActiveColor,
         leading: leading,
         title: title,
@@ -715,7 +720,7 @@ class SwitchListTile extends StatelessWidget {
         minTileHeight: minTileHeight,
         hoverColor: hoverColor,
         internalAddSemanticForOnTap: internalAddSemanticForOnTap,
-      ),
-    );
+      );
+    return mergeSemantics ? MergeSemantics(child: tile) : tile;
   }
 }

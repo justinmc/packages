@@ -241,6 +241,7 @@ class CheckboxListTile extends StatelessWidget {
     this.checkboxScaleFactor = 1.0,
     this.titleAlignment,
     this.internalAddSemanticForOnTap = false,
+    this.mergeSemantics = true,
   }) : _checkboxType = _CheckboxType.material,
        assert(tristate || value != null),
        assert(isThreeLine != true || subtitle != null);
@@ -293,6 +294,7 @@ class CheckboxListTile extends StatelessWidget {
     this.checkboxScaleFactor = 1.0,
     this.titleAlignment,
     this.internalAddSemanticForOnTap = false,
+    this.mergeSemantics = true,
   }) : _checkboxType = _CheckboxType.adaptive,
        assert(tristate || value != null),
        assert(isThreeLine != true || subtitle != null);
@@ -507,6 +509,10 @@ class CheckboxListTile extends StatelessWidget {
   ///  * [Feedback] for providing platform-specific feedback to certain actions.
   final bool? enableFeedback;
 
+  /// Whether to wrap the List Tile in a MergeSemantics.
+  /// Default is true.
+  final bool mergeSemantics;
+
   /// {@macro material_ui.ListTile.horizontalTitleGap}
   final double? horizontalTitleGap;
 
@@ -634,8 +640,7 @@ class CheckboxListTile extends StatelessWidget {
     final states = <WidgetState>{if (selected) WidgetState.selected};
     final Color effectiveActiveColor =
         activeColor ?? checkboxTheme.fillColor?.resolve(states) ?? theme.colorScheme.secondary;
-    return MergeSemantics(
-      child: ListTile(
+    final Widget tile = ListTile(
         selectedColor: effectiveActiveColor,
         leading: leading,
         title: title,
@@ -662,7 +667,7 @@ class CheckboxListTile extends StatelessWidget {
         minTileHeight: minTileHeight,
         titleAlignment: titleAlignment,
         internalAddSemanticForOnTap: internalAddSemanticForOnTap,
-      ),
-    );
+      );
+    return mergeSemantics ? MergeSemantics(child: tile) : tile;
   }
 }

@@ -236,6 +236,7 @@ class RadioListTile<T> extends StatefulWidget {
     this.radioBackgroundColor,
     this.radioSide,
     this.radioInnerRadius,
+    this.mergeSemantics = true,
   }) : _radioType = _RadioType.material,
        useCupertinoCheckmarkStyle = false,
        assert(isThreeLine != true || subtitle != null);
@@ -296,6 +297,7 @@ class RadioListTile<T> extends StatefulWidget {
     this.radioBackgroundColor,
     this.radioSide,
     this.radioInnerRadius,
+    this.mergeSemantics = true,
   }) : _radioType = _RadioType.adaptive,
        assert(isThreeLine != true || subtitle != null);
 
@@ -519,6 +521,10 @@ class RadioListTile<T> extends StatefulWidget {
   ///
   ///  * [Feedback] for providing platform-specific feedback to certain actions.
   final bool? enableFeedback;
+
+  /// Whether to wrap the List Tile in a MergeSemantics.
+  /// Default is true.
+  final bool mergeSemantics;
 
   /// {@macro material_ui.ListTile.horizontalTitleGap}
   final double? horizontalTitleGap;
@@ -762,8 +768,7 @@ class _RadioListTileState<T> extends State<RadioListTile<T>> with RadioClient<T>
         widget.activeColor ??
         radioThemeData.fillColor?.resolve(states) ??
         theme.colorScheme.secondary;
-    return MergeSemantics(
-      child: ListTile(
+    final Widget tile = ListTile(
         selectedColor: effectiveActiveColor,
         leading: leading,
         title: widget.title,
@@ -790,8 +795,8 @@ class _RadioListTileState<T> extends State<RadioListTile<T>> with RadioClient<T>
         minTileHeight: widget.minTileHeight,
         titleAlignment: widget.titleAlignment,
         internalAddSemanticForOnTap: widget.internalAddSemanticForOnTap,
-      ),
-    );
+      );
+    return widget.mergeSemantics ? MergeSemantics(child: tile) : tile;
   }
 }
 
