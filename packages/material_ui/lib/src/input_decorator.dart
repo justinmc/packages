@@ -1969,7 +1969,7 @@ class InputDecorator extends StatefulWidget {
   /// or SizedBox, the input field will only be affected if [expands] is set to
   /// true.
   ///
-  /// See [TextField.minLines] and [TextField.maxLines] for related ways to
+  /// See [TextField]'s `minLines` and [TextField.maxLines] for related ways to
   /// affect the height of an input. When [expands] is true, both must be null
   /// in order to avoid ambiguity in determining the height.
   ///

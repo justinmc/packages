@@ -38,7 +38,7 @@ export 'package:flutter/services.dart'
 // late BuildContext context;
 // late FocusNode myFocusNode;
 
-/// Signature for the [TextField.buildCounter] callback.
+/// Signature for the `buildCounter` callback of [TextField].
 typedef InputCounterWidgetBuilder = Widget? Function(
   /// The build context for the TextField.
   BuildContext context, {
@@ -66,7 +66,7 @@ class _TextFieldSelectionGestureDetectorBuilder extends TextSelectionGestureDete
 
   @override
   void onUserTap() {
-    _state.widget.onTap?.call();
+    _state.widget._onTap?.call();
   }
 }
 
@@ -75,10 +75,10 @@ class _TextFieldSelectionGestureDetectorBuilder extends TextSelectionGestureDete
 /// A text field lets the user enter text, either with hardware keyboard or with
 /// an onscreen keyboard.
 ///
-/// The text field calls the [onChanged] callback whenever the user changes the
+/// The text field calls the `onChanged` callback whenever the user changes the
 /// text in the field. If the user indicates that they are done typing in the
 /// field (e.g., by pressing a button on the soft keyboard), the text field
-/// calls the [onSubmitted] callback.
+/// calls the `onSubmitted` callback.
 ///
 /// To control the text that is displayed in the text field, use the
 /// [controller]. For example, to set the initial value of the text field, use
@@ -127,13 +127,13 @@ class _TextFieldSelectionGestureDetectorBuilder extends TextSelectionGestureDete
 ///
 /// ## Reading values
 ///
-/// A common way to read a value from a TextField is to use the [onSubmitted]
+/// A common way to read a value from a TextField is to use the `onSubmitted`
 /// callback. This callback is applied to the text field's current value when
 /// the user finishes editing.
 ///
 /// <callout-box>
 ///
-/// This sample shows how to get a value from a TextField via the [onSubmitted]
+/// This sample shows how to get a value from a TextField via the `onSubmitted`
 /// callback.
 ///
 // TODO(framework): Replace the following block with a @dartpad directive
@@ -146,11 +146,11 @@ class _TextFieldSelectionGestureDetectorBuilder extends TextSelectionGestureDete
 ///
 /// {@macro flutter.widgets.EditableText.lifeCycle}
 ///
-/// For most applications the [onSubmitted] callback will be sufficient for
+/// For most applications the `onSubmitted` callback will be sufficient for
 /// reacting to user input.
 ///
 /// The [onEditingComplete] callback also runs when the user finishes editing.
-/// It's different from [onSubmitted] because it has a default value which
+/// It's different from `onSubmitted` because it has a default value which
 /// updates the text controller and yields the keyboard focus. Applications that
 /// require different behavior can override the default [onEditingComplete]
 /// callback.
@@ -233,41 +233,321 @@ class TextField extends StatefulWidget {
   /// the number of lines. By default, it is one, meaning this is a single-line
   /// text field. [maxLines] must not be zero.
   ///
-  /// The [maxLength] property is set to null by default, which means the
-  /// number of characters allowed in the text field is not restricted. If
-  /// [maxLength] is set a character counter will be displayed below the
-  /// field showing how many characters have been entered. If the value is
-  /// set to a positive integer it will also display the maximum allowed
-  /// number of characters to be entered. If the value is set to
-  /// [TextField.noMaxLength] then only the current length is displayed.
-  ///
-  /// After [maxLength] characters have been input, additional input
-  /// is ignored, unless [maxLengthEnforcement] is set to
-  /// [MaxLengthEnforcement.none].
-  /// The text field enforces the length with a [LengthLimitingTextInputFormatter],
-  /// which is evaluated after the supplied [inputFormatters], if any.
-  /// The [maxLength] value must be either null or greater than zero.
-  ///
-  /// If [maxLengthEnforcement] is set to [MaxLengthEnforcement.none], then more
-  /// than [maxLength] characters may be entered, and the error counter and
-  /// divider will switch to the [decoration].errorStyle when the limit is
-  /// exceeded.
-  ///
-  /// The text cursor is not shown if [showCursor] is false or if [showCursor]
-  /// is null (the default) and [readOnly] is true.
-  ///
   /// The [selectionHeightStyle] and [selectionWidthStyle] properties allow
   /// changing the shape of the selection highlighting. These properties default
   /// to [EditableText.defaultSelectionHeightStyle] and
   /// [EditableText.defaultSelectionHeightStyle], respectively.
   ///
+  /// ## Parameters
+  ///
+  /// Parameters that are not listed here are documented on the [TextField]
+  /// property of the same name.
+  ///
+  /// ### groupId
+  ///
+  /// {@macro flutter.widgets.editableText.groupId}
+  ///
+  /// ### strutStyle
+  ///
+  /// {@macro flutter.widgets.editableText.strutStyle}
+  ///
+  /// ### textDirection
+  ///
+  /// {@macro flutter.widgets.editableText.textDirection}
+  ///
+  /// This does not affect the direction of the decoration's
+  /// [InputDecoration.hintText] or [InputDecoration.labelText].
+  ///
+  /// To override the direction for the entire field (including the hint, label,
+  /// and prefix/suffix icons), wrap the [TextField] in a [Directionality] widget.
+  ///
   /// See also:
   ///
-  ///  * [maxLength], which discusses the precise meaning of "number of
-  ///    characters" and how it may differ from the intuitive meaning.
+  ///  * [InputDecoration.hintTextDirection], which specifically controls the hint.
+  ///  * [InputDecoration.labelTextDirection], which specifically controls the label.
+  ///  * [Directionality], which provides the default direction for the subtree.
+  ///
+  /// ### toolbarOptions
+  ///
+  /// Configuration of toolbar options.
+  ///
+  /// If not set, select all and paste will default to be enabled. Copy and cut
+  /// will be disabled if [obscureText] is true. If [readOnly] is true,
+  /// paste and cut will be disabled regardless.
+  ///
+  /// ### showCursor
+  ///
+  /// {@macro flutter.widgets.editableText.showCursor}
+  ///
+  /// The text cursor is not shown if `showCursor` is false or if `showCursor`
+  /// is null (the default) and [readOnly] is true.
+  ///
+  /// ### autofocus
+  ///
+  /// {@macro flutter.widgets.editableText.autofocus}
+  ///
+  /// ### statesController
+  ///
+  /// Represents the interactive "state" of this widget in terms of a set of
+  /// [WidgetState]s, including [WidgetState.disabled], [WidgetState.hovered],
+  /// [WidgetState.error], and [WidgetState.focused].
+  ///
+  /// Classes based on this one can provide their own
+  /// [WidgetStatesController] to which they've added listeners.
+  /// They can also update the controller's [WidgetStatesController.value]
+  /// however, this may only be done when it's safe to call
+  /// [State.setState], like in an event handler.
+  ///
+  /// The controller's [WidgetStatesController.value] represents the set of
+  /// states that a widget's visual properties, typically [WidgetStateProperty]
+  /// values, are resolved against. It is _not_ the intrinsic state of the widget.
+  /// The widget is responsible for ensuring that the controller's
+  /// [WidgetStatesController.value] tracks its intrinsic state. For example
+  /// one cannot request the keyboard focus for a widget by adding [WidgetState.focused]
+  /// to its controller. When the widget gains the or loses the focus it will
+  /// [WidgetStatesController.update] its controller's [WidgetStatesController.value]
+  /// and notify listeners of the change.
+  ///
+  /// ### obscuringCharacter
+  ///
+  /// {@macro flutter.widgets.editableText.obscuringCharacter}
+  ///
+  /// ### minLines
+  ///
+  /// {@macro flutter.widgets.editableText.minLines}
+  ///  * `expands`, which determines whether the field should fill the height of
+  ///    its parent.
+  ///
+  /// ### expands
+  ///
+  /// {@macro flutter.widgets.editableText.expands}
+  ///
+  /// ### maxLength
+  ///
+  /// The maximum number of characters (Unicode grapheme clusters) to allow in
+  /// the text field.
+  ///
+  /// If set, a character counter will be displayed below the
+  /// field showing how many characters have been entered. If set to a number
+  /// greater than 0, it will also display the maximum number allowed. If set
+  /// to [TextField.noMaxLength] then only the current character count is displayed.
+  /// To remove the counter, set [InputDecoration.counterText] to an empty string or
+  /// return null from the `buildCounter` callback.
+  ///
+  /// After `maxLength` characters have been input, additional input
+  /// is ignored, unless `maxLengthEnforcement` is set to
+  /// [MaxLengthEnforcement.none].
+  ///
+  /// The text field enforces the length with a [LengthLimitingTextInputFormatter],
+  /// which is evaluated after the supplied `inputFormatters`, if any.
+  ///
+  /// This value must be either null, [TextField.noMaxLength], or greater than 0.
+  /// If null (the default) then there is no limit to the number of characters
+  /// that can be entered. If set to [TextField.noMaxLength], then no limit will
+  /// be enforced, but the number of characters entered will still be displayed.
+  ///
+  /// Whitespace characters (e.g. newline, space, tab) are included in the
+  /// character count.
+  ///
+  /// If `maxLengthEnforcement` is [MaxLengthEnforcement.none], then more than
+  /// `maxLength` characters may be entered, but the error counter and divider
+  /// will switch to the [decoration]'s [InputDecoration.errorStyle] when the
+  /// limit is exceeded.
+  ///
+  /// {@macro flutter.services.lengthLimitingTextInputFormatter.maxLength}
+  ///
+  /// ### maxLengthEnforcement
+  ///
+  /// Determines how the `maxLength` limit should be enforced.
+  ///
+  /// {@macro flutter.services.textFormatter.effectiveMaxLengthEnforcement}
+  ///
+  /// {@macro flutter.services.textFormatter.maxLengthEnforcement}
+  ///
+  /// ### onChanged
+  ///
+  /// Called when the user initiates a change to the TextField's
+  /// value: when they have inserted or deleted text.
+  ///
+  /// For more information, see [EditableText.onChanged].
+  // TODO(dkwingsmt): Migrate the doc back to macro
+  // flutter.widgets.editableText.onChanged
+  // https://github.com/flutter/flutter/issues/189629
+  ///
+  /// See also:
+  ///
+  ///  * `inputFormatters`, which are called before `onChanged`
+  ///    runs and can validate and change ("format") the input value.
+  ///  * [onEditingComplete], `onSubmitted`:
+  ///    which are more specialized input change notifications.
+  ///
+  /// ### onSubmitted
+  ///
+  /// {@macro flutter.widgets.editableText.onSubmitted}
+  ///
+  /// See also:
+  ///
+  ///  * [TextInputAction.next] and [TextInputAction.previous], which
+  ///    automatically shift the focus to the next/previous focusable item when
+  ///    the user is done editing.
+  ///
+  /// ### inputFormatters
+  ///
+  /// {@macro flutter.widgets.editableText.inputFormatters}
+  ///
+  /// ### ignorePointers
+  ///
+  /// Determines whether this widget ignores pointer events.
+  ///
+  /// Defaults to null, and when null, does nothing.
+  ///
+  /// ### cursorErrorColor
+  ///
+  /// The color of the cursor when the [InputDecorator] is showing an error.
+  ///
+  /// If this is null it will default to [TextStyle.color] of
+  /// [InputDecoration.errorStyle]. If that is null, it will use
+  /// [ColorScheme.error] of [ThemeData.colorScheme].
+  ///
+  /// ### keyboardAppearance
+  ///
+  /// The appearance of the keyboard.
+  ///
+  /// This setting is only honored on iOS devices.
+  ///
+  /// If unset, defaults to [ThemeData.brightness].
+  ///
+  /// ### scrollPadding
+  ///
+  /// {@macro flutter.widgets.editableText.scrollPadding}
+  ///
+  /// ### selectAllOnFocus
+  ///
+  /// {@macro flutter.widgets.editableText.selectAllOnFocus}
+  ///
+  /// ### onTap
+  ///
+  /// {@macro cupertino_ui.textfield.onTap}
+  ///
+  /// If [onTapAlwaysCalled] is enabled, this will also be called for consecutive
+  /// taps.
+  ///
+  /// ### onTapOutside
+  ///
+  /// {@macro flutter.widgets.editableText.onTapOutside}
+  ///
+  /// <callout-box>
+  ///
+  /// This example shows how to use a `TextFieldTapRegion` to wrap a set of
+  /// "spinner" buttons that increment and decrement a value in the [TextField]
+  /// without causing the text field to lose keyboard focus.
+  ///
+  /// This example includes a generic `SpinnerField<T>` class that you can copy
+  /// into your own project and customize.
+  ///
+  // TODO(framework): Replace the following block with a @dartpad directive
+  // when it's supported. https://github.com/dart-lang/dartdoc/issues/4123
+  /// {@macro material_ui.dartpad_guide}
+  ///
+  /// {@example /example/lib/text_field/text_field_tap_region.0.dart#body}
+  ///
+  /// </callout-box>
+  ///
+  /// See also:
+  ///
+  ///  * [TapRegion] for how the region group is determined.
+  ///
+  /// ### onTapUpOutside
+  ///
+  /// {@macro flutter.widgets.editableText.onTapUpOutside}
+  ///
+  /// ### mouseCursor
+  ///
+  /// The cursor for a mouse pointer when it enters or is hovering over the
+  /// widget.
+  ///
+  /// If `mouseCursor` is a [WidgetStateMouseCursor],
+  /// [WidgetStateProperty.resolve] is used for the following [WidgetState]s:
+  ///
+  ///  * [WidgetState.error].
+  ///  * [WidgetState.hovered].
+  ///  * [WidgetState.focused].
+  ///  * [WidgetState.disabled].
+  ///
+  /// If this property is null, [WidgetStateMouseCursor.textable] will be used.
+  ///
+  /// The `mouseCursor` is the only property of [TextField] that controls the
+  /// appearance of the mouse pointer. All other properties related to "cursor"
+  /// stand for the text cursor, which is usually a blinking vertical line at
+  /// the editing position.
+  ///
+  /// ### buildCounter
+  ///
+  /// Callback that generates a custom [InputDecoration.counter] widget.
+  ///
+  /// See [InputCounterWidgetBuilder] for an explanation of the passed in
+  /// arguments. The returned widget will be placed below the line in place of
+  /// the default widget built when [InputDecoration.counterText] is specified.
+  ///
+  /// The returned widget will be wrapped in a [Semantics] widget for
+  /// accessibility, but it also needs to be accessible itself. For example,
+  /// if returning a Text widget, set the [Text.semanticsLabel] property.
+  ///
+  /// <callout-box>
+  ///
+  // TODO(framework): Add unit tests to this code snippet.
+  // https://github.com/flutter/flutter/issues/188530
+  ///
+  /// ```dart
+  /// Widget counter(
+  ///   BuildContext context,
+  ///   {
+  ///     required int currentLength,
+  ///     required int? maxLength,
+  ///     required bool isFocused,
+  ///   }
+  /// ) {
+  ///   return Text(
+  ///     '$currentLength of $maxLength characters',
+  ///     semanticsLabel: 'character count',
+  ///   );
+  /// }
+  /// ```
+  ///
+  /// </callout-box>
+  ///
+  /// If `buildCounter` returns null, then no counter and no Semantics widget will
+  /// be created at all.
+  ///
+  /// ### stylusHandwritingEnabled
+  ///
+  /// {@macro flutter.widgets.editableText.stylusHandwritingEnabled}
+  ///
+  /// ### enableIMEPersonalizedLearning
+  ///
+  /// {@macro flutter.services.TextInputConfiguration.enableIMEPersonalizedLearning}
+  ///
+  /// ### contextMenuBuilder
+  ///
+  /// {@macro flutter.widgets.EditableText.contextMenuBuilder}
+  ///
+  /// If not provided, will build a default menu based on the platform.
+  ///
+  /// See also:
+  ///
+  ///  * [AdaptiveTextSelectionToolbar], which is built by default.
+  ///  * [BrowserContextMenu], which allows the browser's context menu on web to
+  ///    be disabled and Flutter-rendered context menus to appear.
+  ///
+  /// ### spellCheckConfiguration
+  ///
+  /// {@macro flutter.widgets.EditableText.spellCheckConfiguration}
+  ///
+  /// If [SpellCheckConfiguration.misspelledTextStyle] is not specified in this
+  /// configuration, then [materialMisspelledTextStyle] is used by default.
   const TextField({
     super.key,
-    this.groupId = EditableText,
+    this._groupId = EditableText,
     this.controller,
     this.focusNode,
     this.undoController,
@@ -276,57 +556,57 @@ class TextField extends StatefulWidget {
     this.textInputAction,
     this.textCapitalization = TextCapitalization.none,
     this.style,
-    this.strutStyle,
+    this._strutStyle,
     this.textAlign = TextAlign.start,
     this.textAlignVertical,
-    this.textDirection,
+    this._textDirection,
     this.readOnly = false,
     @Deprecated(
       'Use `contextMenuBuilder` instead. '
       'This feature was deprecated after v3.3.0-0.5.pre.',
     )
-    this.toolbarOptions,
-    this.showCursor,
-    this.autofocus = false,
-    this.statesController,
-    this.obscuringCharacter = '•',
+    this._toolbarOptions,
+    this._showCursor,
+    this._autofocus = false,
+    this._statesController,
+    this._obscuringCharacter = '•',
     this.obscureText = false,
     this.autocorrect,
     SmartDashesType? smartDashesType,
     SmartQuotesType? smartQuotesType,
     this.enableSuggestions = true,
     this.maxLines = 1,
-    this.minLines,
-    this.expands = false,
-    this.maxLength,
-    this.maxLengthEnforcement,
-    this.onChanged,
+    this._minLines,
+    this._expands = false,
+    this._maxLength,
+    this._maxLengthEnforcement,
+    this._onChanged,
     this.onEditingComplete,
-    this.onSubmitted,
+    this._onSubmitted,
     this.onAppPrivateCommand,
-    this.inputFormatters,
+    this._inputFormatters,
     this.enabled,
-    this.ignorePointers,
+    this._ignorePointers,
     this.cursorWidth = 2.0,
     this.cursorHeight,
     this.cursorRadius,
     this.cursorOpacityAnimates,
     this.cursorColor,
-    this.cursorErrorColor,
+    this._cursorErrorColor,
     this.selectionHeightStyle,
     this.selectionWidthStyle,
-    this.keyboardAppearance,
-    this.scrollPadding = const EdgeInsets.all(20.0),
+    this._keyboardAppearance,
+    this._scrollPadding = const EdgeInsets.all(20.0),
     this.dragStartBehavior = DragStartBehavior.start,
     bool? enableInteractiveSelection,
-    this.selectAllOnFocus,
+    this._selectAllOnFocus,
     this.selectionControls,
-    this.onTap,
+    this._onTap,
     this.onTapAlwaysCalled = false,
-    this.onTapOutside,
-    this.onTapUpOutside,
-    this.mouseCursor,
-    this.buildCounter,
+    this._onTapOutside,
+    this._onTapUpOutside,
+    this._mouseCursor,
+    this._buildCounter,
     this.scrollController,
     this.scrollPhysics,
     this.autofillHints = const <String>[],
@@ -338,31 +618,31 @@ class TextField extends StatefulWidget {
       'This feature was deprecated after v3.27.0-0.2.pre.',
     )
     this.scribbleEnabled = true,
-    this.stylusHandwritingEnabled = EditableText.defaultStylusHandwritingEnabled,
-    this.enableIMEPersonalizedLearning = true,
+    this._stylusHandwritingEnabled = EditableText.defaultStylusHandwritingEnabled,
+    this._enableIMEPersonalizedLearning = true,
     this.enableInlinePrediction,
-    this.contextMenuBuilder = _defaultContextMenuBuilder,
+    this._contextMenuBuilder = _defaultContextMenuBuilder,
     this.canRequestFocus = true,
-    this.spellCheckConfiguration,
+    this._spellCheckConfiguration,
     this.magnifierConfiguration,
     this.hintLocales,
-  }) : assert(obscuringCharacter.length == 1),
+  }) : assert(_obscuringCharacter.length == 1),
        smartDashesType =
            smartDashesType ?? (obscureText ? SmartDashesType.disabled : SmartDashesType.enabled),
        smartQuotesType =
            smartQuotesType ?? (obscureText ? SmartQuotesType.disabled : SmartQuotesType.enabled),
        assert(maxLines == null || maxLines > 0),
-       assert(minLines == null || minLines > 0),
+       assert(_minLines == null || _minLines > 0),
        assert(
-         (maxLines == null) || (minLines == null) || (maxLines >= minLines),
+         (maxLines == null) || (_minLines == null) || (maxLines >= _minLines),
          "minLines can't be greater than maxLines",
        ),
        assert(
-         !expands || (maxLines == null && minLines == null),
+         !_expands || (maxLines == null && _minLines == null),
          'minLines and maxLines must be null when expands is true.',
        ),
        assert(!obscureText || maxLines == 1, 'Obscured fields cannot be multiline.'),
-       assert(maxLength == null || maxLength == TextField.noMaxLength || maxLength > 0),
+       assert(_maxLength == null || _maxLength == TextField.noMaxLength || _maxLength > 0),
        // Assert the following instead of setting it directly to avoid surprising the user by silently changing the value they set.
        assert(
          textInputAction != TextInputAction.newline ||
@@ -395,8 +675,7 @@ class TextField extends StatefulWidget {
   /// </callout-box>
   final TextMagnifierConfiguration? magnifierConfiguration;
 
-  /// {@macro flutter.widgets.editableText.groupId}
-  final Object groupId;
+  final Object _groupId;
 
   /// Controls the text being edited.
   ///
@@ -487,8 +766,7 @@ class TextField extends StatefulWidget {
   /// [ThemeData.disabledColor] will be used instead.
   final TextStyle? style;
 
-  /// {@macro flutter.widgets.editableText.strutStyle}
-  final StrutStyle? strutStyle;
+  final StrutStyle? _strutStyle;
 
   /// {@macro flutter.widgets.editableText.textAlign}
   final TextAlign textAlign;
@@ -496,47 +774,13 @@ class TextField extends StatefulWidget {
   /// {@macro cupertino_ui.InputDecorator.textAlignVertical}
   final TextAlignVertical? textAlignVertical;
 
-  /// {@macro flutter.widgets.editableText.textDirection}
-  ///
-  /// This does not affect the direction of the decoration's
-  /// [InputDecoration.hintText] or [InputDecoration.labelText].
-  ///
-  /// To override the direction for the entire field (including the hint, label,
-  /// and prefix/suffix icons), wrap the [TextField] in a [Directionality] widget.
-  ///
-  /// See also:
-  ///
-  ///  * [InputDecoration.hintTextDirection], which specifically controls the hint.
-  ///  * [InputDecoration.labelTextDirection], which specifically controls the label.
-  ///  * [Directionality], which provides the default direction for the subtree.
-  final TextDirection? textDirection;
+  final TextDirection? _textDirection;
 
-  /// {@macro flutter.widgets.editableText.autofocus}
-  final bool autofocus;
+  final bool _autofocus;
 
-  /// Represents the interactive "state" of this widget in terms of a set of
-  /// [WidgetState]s, including [WidgetState.disabled], [WidgetState.hovered],
-  /// [WidgetState.error], and [WidgetState.focused].
-  ///
-  /// Classes based on this one can provide their own
-  /// [WidgetStatesController] to which they've added listeners.
-  /// They can also update the controller's [WidgetStatesController.value]
-  /// however, this may only be done when it's safe to call
-  /// [State.setState], like in an event handler.
-  ///
-  /// The controller's [WidgetStatesController.value] represents the set of
-  /// states that a widget's visual properties, typically [WidgetStateProperty]
-  /// values, are resolved against. It is _not_ the intrinsic state of the widget.
-  /// The widget is responsible for ensuring that the controller's
-  /// [WidgetStatesController.value] tracks its intrinsic state. For example
-  /// one cannot request the keyboard focus for a widget by adding [WidgetState.focused]
-  /// to its controller. When the widget gains the or loses the focus it will
-  /// [WidgetStatesController.update] its controller's [WidgetStatesController.value]
-  /// and notify listeners of the change.
-  final MaterialStatesController? statesController;
+  final MaterialStatesController? _statesController;
 
-  /// {@macro flutter.widgets.editableText.obscuringCharacter}
-  final String obscuringCharacter;
+  final String _obscuringCharacter;
 
   /// {@macro flutter.widgets.editableText.obscureText}
   final bool obscureText;
@@ -554,112 +798,44 @@ class TextField extends StatefulWidget {
   final bool enableSuggestions;
 
   /// {@macro flutter.widgets.editableText.maxLines}
-  ///  * [expands], which determines whether the field should fill the height of
+  ///  * `expands`, which determines whether the field should fill the height of
   ///    its parent.
   final int? maxLines;
 
-  /// {@macro flutter.widgets.editableText.minLines}
-  ///  * [expands], which determines whether the field should fill the height of
-  ///    its parent.
-  final int? minLines;
+  final int? _minLines;
 
-  /// {@macro flutter.widgets.editableText.expands}
-  final bool expands;
+  final bool _expands;
 
   /// {@macro flutter.widgets.editableText.readOnly}
   final bool readOnly;
 
-  /// Configuration of toolbar options.
-  ///
-  /// If not set, select all and paste will default to be enabled. Copy and cut
-  /// will be disabled if [obscureText] is true. If [readOnly] is true,
-  /// paste and cut will be disabled regardless.
   @Deprecated(
     'Use `contextMenuBuilder` instead. '
     'This feature was deprecated after v3.3.0-0.5.pre.',
   )
-  final ToolbarOptions? toolbarOptions;
+  final ToolbarOptions? _toolbarOptions;
 
-  /// {@macro flutter.widgets.editableText.showCursor}
-  final bool? showCursor;
+  final bool? _showCursor;
 
-  /// If [maxLength] is set to this value, only the "current input length"
+  /// If `maxLength` is set to this value, only the "current input length"
   /// part of the character counter is shown.
   static const int noMaxLength = -1;
 
-  /// The maximum number of characters (Unicode grapheme clusters) to allow in
-  /// the text field.
-  ///
-  /// If set, a character counter will be displayed below the
-  /// field showing how many characters have been entered. If set to a number
-  /// greater than 0, it will also display the maximum number allowed. If set
-  /// to [TextField.noMaxLength] then only the current character count is displayed.
-  /// To remove the counter, set [InputDecoration.counterText] to an empty string or
-  /// return null from [TextField.buildCounter] callback.
-  ///
-  /// After [maxLength] characters have been input, additional input
-  /// is ignored, unless [maxLengthEnforcement] is set to
-  /// [MaxLengthEnforcement.none].
-  ///
-  /// The text field enforces the length with a [LengthLimitingTextInputFormatter],
-  /// which is evaluated after the supplied [inputFormatters], if any.
-  ///
-  /// This value must be either null, [TextField.noMaxLength], or greater than 0.
-  /// If null (the default) then there is no limit to the number of characters
-  /// that can be entered. If set to [TextField.noMaxLength], then no limit will
-  /// be enforced, but the number of characters entered will still be displayed.
-  ///
-  /// Whitespace characters (e.g. newline, space, tab) are included in the
-  /// character count.
-  ///
-  /// If [maxLengthEnforcement] is [MaxLengthEnforcement.none], then more than
-  /// [maxLength] characters may be entered, but the error counter and divider
-  /// will switch to the [decoration]'s [InputDecoration.errorStyle] when the
-  /// limit is exceeded.
-  ///
-  /// {@macro flutter.services.lengthLimitingTextInputFormatter.maxLength}
-  final int? maxLength;
+  final int? _maxLength;
 
-  /// Determines how the [maxLength] limit should be enforced.
-  ///
-  /// {@macro flutter.services.textFormatter.effectiveMaxLengthEnforcement}
-  ///
-  /// {@macro flutter.services.textFormatter.maxLengthEnforcement}
-  final MaxLengthEnforcement? maxLengthEnforcement;
+  final MaxLengthEnforcement? _maxLengthEnforcement;
 
-  /// Called when the user initiates a change to the TextField's
-  /// value: when they have inserted or deleted text.
-  ///
-  /// For more information, see [EditableText.onChanged].
-  // TODO(dkwingsmt): Migrate the doc back to macro
-  // flutter.widgets.editableText.onChanged
-  // https://github.com/flutter/flutter/issues/189629
-  ///
-  /// See also:
-  ///
-  ///  * [inputFormatters], which are called before [onChanged]
-  ///    runs and can validate and change ("format") the input value.
-  ///  * [onEditingComplete], [onSubmitted]:
-  ///    which are more specialized input change notifications.
-  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? _onChanged;
 
   /// {@macro flutter.widgets.editableText.onEditingComplete}
   final VoidCallback? onEditingComplete;
 
-  /// {@macro flutter.widgets.editableText.onSubmitted}
-  ///
-  /// See also:
-  ///
-  ///  * [TextInputAction.next] and [TextInputAction.previous], which
-  ///    automatically shift the focus to the next/previous focusable item when
-  ///    the user is done editing.
-  final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? _onSubmitted;
 
   /// {@macro flutter.widgets.editableText.onAppPrivateCommand}
   final AppPrivateCommandCallback? onAppPrivateCommand;
 
-  /// {@macro flutter.widgets.editableText.inputFormatters}
-  final List<TextInputFormatter>? inputFormatters;
+  final List<TextInputFormatter>? _inputFormatters;
 
   /// If false the text field is "disabled": it ignores taps and its
   /// [decoration] is rendered in grey.
@@ -689,10 +865,7 @@ class TextField extends StatefulWidget {
   /// ```
   final bool? enabled;
 
-  /// Determines whether this widget ignores pointer events.
-  ///
-  /// Defaults to null, and when null, does nothing.
-  final bool? ignorePointers;
+  final bool? _ignorePointers;
 
   /// {@macro flutter.widgets.editableText.cursorWidth}
   final double cursorWidth;
@@ -718,12 +891,7 @@ class TextField extends StatefulWidget {
   /// the value of [ColorScheme.primary] of [ThemeData.colorScheme].
   final Color? cursorColor;
 
-  /// The color of the cursor when the [InputDecorator] is showing an error.
-  ///
-  /// If this is null it will default to [TextStyle.color] of
-  /// [InputDecoration.errorStyle]. If that is null, it will use
-  /// [ColorScheme.error] of [ThemeData.colorScheme].
-  final Color? cursorErrorColor;
+  final Color? _cursorErrorColor;
 
   /// Controls how tall the selection highlight boxes are computed to be.
   ///
@@ -735,21 +903,14 @@ class TextField extends StatefulWidget {
   /// See [ui.BoxWidthStyle] for details on available styles.
   final ui.BoxWidthStyle? selectionWidthStyle;
 
-  /// The appearance of the keyboard.
-  ///
-  /// This setting is only honored on iOS devices.
-  ///
-  /// If unset, defaults to [ThemeData.brightness].
-  final Brightness? keyboardAppearance;
+  final Brightness? _keyboardAppearance;
 
-  /// {@macro flutter.widgets.editableText.scrollPadding}
-  final EdgeInsets scrollPadding;
+  final EdgeInsets _scrollPadding;
 
   /// {@macro flutter.widgets.editableText.enableInteractiveSelection}
   final bool enableInteractiveSelection;
 
-  /// {@macro flutter.widgets.editableText.selectAllOnFocus}
-  final bool? selectAllOnFocus;
+  final bool? _selectAllOnFocus;
 
   /// {@macro flutter.widgets.editableText.selectionControls}
   final TextSelectionControls? selectionControls;
@@ -760,100 +921,21 @@ class TextField extends StatefulWidget {
   /// {@macro flutter.widgets.editableText.selectionEnabled}
   bool get selectionEnabled => enableInteractiveSelection;
 
-  /// {@macro cupertino_ui.textfield.onTap}
-  ///
-  /// If [onTapAlwaysCalled] is enabled, this will also be called for consecutive
-  /// taps.
-  final GestureTapCallback? onTap;
+  final GestureTapCallback? _onTap;
 
-  /// Whether [onTap] should be called for every tap.
+  /// Whether `onTap` should be called for every tap.
   ///
-  /// Defaults to false, so [onTap] is only called for each distinct tap. When
-  /// enabled, [onTap] is called for every tap including consecutive taps.
+  /// Defaults to false, so `onTap` is only called for each distinct tap. When
+  /// enabled, `onTap` is called for every tap including consecutive taps.
   final bool onTapAlwaysCalled;
 
-  /// {@macro flutter.widgets.editableText.onTapOutside}
-  ///
-  /// <callout-box>
-  ///
-  /// This example shows how to use a `TextFieldTapRegion` to wrap a set of
-  /// "spinner" buttons that increment and decrement a value in the [TextField]
-  /// without causing the text field to lose keyboard focus.
-  ///
-  /// This example includes a generic `SpinnerField<T>` class that you can copy
-  /// into your own project and customize.
-  ///
-  // TODO(framework): Replace the following block with a @dartpad directive
-  // when it's supported. https://github.com/dart-lang/dartdoc/issues/4123
-  /// {@macro material_ui.dartpad_guide}
-  ///
-  /// {@example /example/lib/text_field/text_field_tap_region.0.dart#body}
-  ///
-  /// </callout-box>
-  ///
-  /// See also:
-  ///
-  ///  * [TapRegion] for how the region group is determined.
-  final TapRegionCallback? onTapOutside;
+  final TapRegionCallback? _onTapOutside;
 
-  /// {@macro flutter.widgets.editableText.onTapUpOutside}
-  final TapRegionUpCallback? onTapUpOutside;
+  final TapRegionUpCallback? _onTapUpOutside;
 
-  /// The cursor for a mouse pointer when it enters or is hovering over the
-  /// widget.
-  ///
-  /// If [mouseCursor] is a [WidgetStateMouseCursor],
-  /// [WidgetStateProperty.resolve] is used for the following [WidgetState]s:
-  ///
-  ///  * [WidgetState.error].
-  ///  * [WidgetState.hovered].
-  ///  * [WidgetState.focused].
-  ///  * [WidgetState.disabled].
-  ///
-  /// If this property is null, [WidgetStateMouseCursor.textable] will be used.
-  ///
-  /// The [mouseCursor] is the only property of [TextField] that controls the
-  /// appearance of the mouse pointer. All other properties related to "cursor"
-  /// stand for the text cursor, which is usually a blinking vertical line at
-  /// the editing position.
-  final MouseCursor? mouseCursor;
+  final MouseCursor? _mouseCursor;
 
-  /// Callback that generates a custom [InputDecoration.counter] widget.
-  ///
-  /// See [InputCounterWidgetBuilder] for an explanation of the passed in
-  /// arguments. The returned widget will be placed below the line in place of
-  /// the default widget built when [InputDecoration.counterText] is specified.
-  ///
-  /// The returned widget will be wrapped in a [Semantics] widget for
-  /// accessibility, but it also needs to be accessible itself. For example,
-  /// if returning a Text widget, set the [Text.semanticsLabel] property.
-  ///
-  /// <callout-box>
-  ///
-  // TODO(framework): Add unit tests to this code snippet.
-  // https://github.com/flutter/flutter/issues/188530
-  ///
-  /// ```dart
-  /// Widget counter(
-  ///   BuildContext context,
-  ///   {
-  ///     required int currentLength,
-  ///     required int? maxLength,
-  ///     required bool isFocused,
-  ///   }
-  /// ) {
-  ///   return Text(
-  ///     '$currentLength of $maxLength characters',
-  ///     semanticsLabel: 'character count',
-  ///   );
-  /// }
-  /// ```
-  ///
-  /// </callout-box>
-  ///
-  /// If buildCounter returns null, then no counter and no Semantics widget will
-  /// be created at all.
-  final InputCounterWidgetBuilder? buildCounter;
+  final InputCounterWidgetBuilder? _buildCounter;
 
   /// {@macro flutter.widgets.editableText.scrollPhysics}
   final ScrollPhysics? scrollPhysics;
@@ -880,11 +962,9 @@ class TextField extends StatefulWidget {
   )
   final bool scribbleEnabled;
 
-  /// {@macro flutter.widgets.editableText.stylusHandwritingEnabled}
-  final bool stylusHandwritingEnabled;
+  final bool _stylusHandwritingEnabled;
 
-  /// {@macro flutter.services.TextInputConfiguration.enableIMEPersonalizedLearning}
-  final bool enableIMEPersonalizedLearning;
+  final bool _enableIMEPersonalizedLearning;
 
   /// {@macro flutter.services.TextInputConfiguration.enableInlinePrediction}
   final bool? enableInlinePrediction;
@@ -899,16 +979,7 @@ class TextField extends StatefulWidget {
   // https://github.com/flutter/flutter/issues/189629
   final ContentInsertionConfiguration? contentInsertionConfiguration;
 
-  /// {@macro flutter.widgets.EditableText.contextMenuBuilder}
-  ///
-  /// If not provided, will build a default menu based on the platform.
-  ///
-  /// See also:
-  ///
-  ///  * [AdaptiveTextSelectionToolbar], which is built by default.
-  ///  * [BrowserContextMenu], which allows the browser's context menu on web to
-  ///    be disabled and Flutter-rendered context menus to appear.
-  final EditableTextContextMenuBuilder? contextMenuBuilder;
+  final EditableTextContextMenuBuilder? _contextMenuBuilder;
 
   /// Determine whether this text field can request the primary focus.
   ///
@@ -933,11 +1004,7 @@ class TextField extends StatefulWidget {
     return AdaptiveTextSelectionToolbar.editableText(editableTextState: editableTextState);
   }
 
-  /// {@macro flutter.widgets.EditableText.spellCheckConfiguration}
-  ///
-  /// If [SpellCheckConfiguration.misspelledTextStyle] is not specified in this
-  /// configuration, then [materialMisspelledTextStyle] is used by default.
-  final SpellCheckConfiguration? spellCheckConfiguration;
+  final SpellCheckConfiguration? _spellCheckConfiguration;
 
   /// The [TextStyle] used to indicate misspelled words in the Material style.
   ///
@@ -958,7 +1025,7 @@ class TextField extends StatefulWidget {
   /// an Android-style toolbar.
   ///
   /// See also:
-  ///  * [spellCheckConfiguration], where this is typically specified for
+  ///  * `spellCheckConfiguration`, where this is typically specified for
   ///    [TextField].
   ///  * [SpellCheckConfiguration.spellCheckSuggestionsToolbarBuilder], the
   ///    parameter for which this is the default value for [TextField].
@@ -1034,9 +1101,9 @@ class TextField extends StatefulWidget {
       ),
     );
     properties.add(DiagnosticsProperty<TextStyle>('style', style, defaultValue: null));
-    properties.add(DiagnosticsProperty<bool>('autofocus', autofocus, defaultValue: false));
+    properties.add(DiagnosticsProperty<bool>('autofocus', _autofocus, defaultValue: false));
     properties.add(
-      DiagnosticsProperty<String>('obscuringCharacter', obscuringCharacter, defaultValue: '•'),
+      DiagnosticsProperty<String>('obscuringCharacter', _obscuringCharacter, defaultValue: '•'),
     );
     properties.add(DiagnosticsProperty<bool>('obscureText', obscureText, defaultValue: false));
     properties.add(DiagnosticsProperty<bool>('autocorrect', autocorrect, defaultValue: null));
@@ -1058,13 +1125,13 @@ class TextField extends StatefulWidget {
       DiagnosticsProperty<bool>('enableSuggestions', enableSuggestions, defaultValue: true),
     );
     properties.add(IntProperty('maxLines', maxLines, defaultValue: 1));
-    properties.add(IntProperty('minLines', minLines, defaultValue: null));
-    properties.add(DiagnosticsProperty<bool>('expands', expands, defaultValue: false));
-    properties.add(IntProperty('maxLength', maxLength, defaultValue: null));
+    properties.add(IntProperty('minLines', _minLines, defaultValue: null));
+    properties.add(DiagnosticsProperty<bool>('expands', _expands, defaultValue: false));
+    properties.add(IntProperty('maxLength', _maxLength, defaultValue: null));
     properties.add(
       EnumProperty<MaxLengthEnforcement>(
         'maxLengthEnforcement',
-        maxLengthEnforcement,
+        _maxLengthEnforcement,
         defaultValue: null,
       ),
     );
@@ -1086,7 +1153,9 @@ class TextField extends StatefulWidget {
         defaultValue: null,
       ),
     );
-    properties.add(EnumProperty<TextDirection>('textDirection', textDirection, defaultValue: null));
+    properties.add(
+      EnumProperty<TextDirection>('textDirection', _textDirection, defaultValue: null),
+    );
     properties.add(DoubleProperty('cursorWidth', cursorWidth, defaultValue: 2.0));
     properties.add(DoubleProperty('cursorHeight', cursorHeight, defaultValue: null));
     properties.add(DiagnosticsProperty<Radius>('cursorRadius', cursorRadius, defaultValue: null));
@@ -1094,14 +1163,18 @@ class TextField extends StatefulWidget {
       DiagnosticsProperty<bool>('cursorOpacityAnimates', cursorOpacityAnimates, defaultValue: null),
     );
     properties.add(ColorProperty('cursorColor', cursorColor, defaultValue: null));
-    properties.add(ColorProperty('cursorErrorColor', cursorErrorColor, defaultValue: null));
+    properties.add(ColorProperty('cursorErrorColor', _cursorErrorColor, defaultValue: null));
     properties.add(
-      DiagnosticsProperty<Brightness>('keyboardAppearance', keyboardAppearance, defaultValue: null),
+      DiagnosticsProperty<Brightness>(
+        'keyboardAppearance',
+        _keyboardAppearance,
+        defaultValue: null,
+      ),
     );
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry>(
         'scrollPadding',
-        scrollPadding,
+        _scrollPadding,
         defaultValue: const EdgeInsets.all(20.0),
       ),
     );
@@ -1139,14 +1212,14 @@ class TextField extends StatefulWidget {
     properties.add(
       DiagnosticsProperty<bool>(
         'stylusHandwritingEnabled',
-        stylusHandwritingEnabled,
+        _stylusHandwritingEnabled,
         defaultValue: EditableText.defaultStylusHandwritingEnabled,
       ),
     );
     properties.add(
       DiagnosticsProperty<bool>(
         'enableIMEPersonalizedLearning',
-        enableIMEPersonalizedLearning,
+        _enableIMEPersonalizedLearning,
         defaultValue: true,
       ),
     );
@@ -1160,7 +1233,7 @@ class TextField extends StatefulWidget {
     properties.add(
       DiagnosticsProperty<SpellCheckConfiguration>(
         'spellCheckConfiguration',
-        spellCheckConfiguration,
+        _spellCheckConfiguration,
         defaultValue: null,
       ),
     );
@@ -1189,13 +1262,13 @@ class _TextFieldState extends State<TextField>
   FocusNode get _effectiveFocusNode => widget.focusNode ?? (_focusNode ??= FocusNode());
 
   MaxLengthEnforcement get _effectiveMaxLengthEnforcement =>
-      widget.maxLengthEnforcement ??
+      widget._maxLengthEnforcement ??
       LengthLimitingTextInputFormatter.getDefaultMaxLengthEnforcement(Theme.of(context).platform);
 
   bool _isHovering = false;
 
   bool get needsCounter =>
-      widget.maxLength != null &&
+      widget._maxLength != null &&
       widget.decoration != null &&
       widget.decoration!.counterText == null;
 
@@ -1219,11 +1292,12 @@ class _TextFieldState extends State<TextField>
   int get _currentLength => _effectiveController.value.text.characters.length;
 
   bool get _hasIntrinsicError =>
-      widget.maxLength != null &&
-      widget.maxLength! > 0 &&
+      widget._maxLength != null &&
+      widget._maxLength! > 0 &&
       (widget.controller == null
-          ? !restorePending && _effectiveController.value.text.characters.length > widget.maxLength!
-          : _effectiveController.value.text.characters.length > widget.maxLength!);
+          ? !restorePending &&
+                _effectiveController.value.text.characters.length > widget._maxLength!
+          : _effectiveController.value.text.characters.length > widget._maxLength!);
 
   bool get _hasError =>
       widget.decoration?.errorText != null ||
@@ -1231,7 +1305,7 @@ class _TextFieldState extends State<TextField>
       _hasIntrinsicError;
 
   Color get _errorColor =>
-      widget.cursorErrorColor ??
+      widget._cursorErrorColor ??
       _getEffectiveDecoration().errorStyle?.color ??
       Theme.of(context).colorScheme.error;
 
@@ -1257,12 +1331,12 @@ class _TextFieldState extends State<TextField>
     final int currentLength = _currentLength;
     if (effectiveDecoration.counter == null &&
         effectiveDecoration.counterText == null &&
-        widget.buildCounter != null) {
+        widget._buildCounter != null) {
       final bool isFocused = _effectiveFocusNode.hasFocus;
-      final Widget? builtCounter = widget.buildCounter!(
+      final Widget? builtCounter = widget._buildCounter!(
         context,
         currentLength: currentLength,
-        maxLength: widget.maxLength,
+        maxLength: widget._maxLength,
         isFocused: isFocused,
       );
       // If buildCounter returns null, don't add a counter widget to the field.
@@ -1272,7 +1346,7 @@ class _TextFieldState extends State<TextField>
       return effectiveDecoration.copyWith(counter: counter);
     }
 
-    if (widget.maxLength == null) {
+    if (widget._maxLength == null) {
       return effectiveDecoration;
     } // No counter widget
 
@@ -1280,10 +1354,10 @@ class _TextFieldState extends State<TextField>
     var semanticCounterText = '';
 
     // Handle a real maxLength (positive number)
-    if (widget.maxLength! > 0) {
+    if (widget._maxLength! > 0) {
       // Show the maxLength in the counter
-      counterText += '/${widget.maxLength}';
-      final int remaining = (widget.maxLength! - currentLength).clamp(0, widget.maxLength!);
+      counterText += '/${widget._maxLength}';
+      final int remaining = (widget._maxLength! - currentLength).clamp(0, widget._maxLength!);
       semanticCounterText = localizations.remainingTextFieldCharacterCount(remaining);
     }
 
@@ -1357,14 +1431,14 @@ class _TextFieldState extends State<TextField>
       }
     }
 
-    if (widget.statesController == oldWidget.statesController) {
+    if (widget._statesController == oldWidget._statesController) {
       _statesController.update(WidgetState.disabled, !_isEnabled);
       _statesController.update(WidgetState.hovered, _isHovering);
       _statesController.update(WidgetState.focused, _effectiveFocusNode.hasFocus);
       _statesController.update(WidgetState.error, _hasError);
     } else {
-      oldWidget.statesController?.removeListener(_handleStatesControllerChange);
-      if (widget.statesController != null) {
+      oldWidget._statesController?.removeListener(_handleStatesControllerChange);
+      if (widget._statesController != null) {
         _internalStatesController?.dispose();
         _internalStatesController = null;
       }
@@ -1512,10 +1586,10 @@ class _TextFieldState extends State<TextField>
   }
 
   MaterialStatesController get _statesController =>
-      widget.statesController ?? _internalStatesController!;
+      widget._statesController ?? _internalStatesController!;
 
   void _initStatesController() {
-    if (widget.statesController == null) {
+    if (widget._statesController == null) {
       _internalStatesController = MaterialStatesController();
     }
     _statesController.update(WidgetState.disabled, !_isEnabled);
@@ -1582,14 +1656,14 @@ class _TextFieldState extends State<TextField>
     final TextStyle style = _getInputStyleForState(
       theme.useMaterial3 ? _m3InputStyle(context) : theme.textTheme.titleMedium!,
     ).merge(providedStyle);
-    final Brightness keyboardAppearance = widget.keyboardAppearance ?? theme.brightness;
+    final Brightness keyboardAppearance = widget._keyboardAppearance ?? theme.brightness;
     final TextEditingController controller = _effectiveController;
     final FocusNode focusNode = _effectiveFocusNode;
     final formatters = <TextInputFormatter>[
-      ...?widget.inputFormatters,
-      if (widget.maxLength != null)
+      ...?widget._inputFormatters,
+      if (widget._maxLength != null)
         LengthLimitingTextInputFormatter(
-          widget.maxLength,
+          widget._maxLength,
           maxLengthEnforcement: _effectiveMaxLengthEnforcement,
         ),
     ];
@@ -1602,14 +1676,14 @@ class _TextFieldState extends State<TextField>
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
         spellCheckConfiguration = CupertinoTextField.inferIOSSpellCheckConfiguration(
-          widget.spellCheckConfiguration,
+          widget._spellCheckConfiguration,
         );
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
         spellCheckConfiguration = TextField.inferAndroidSpellCheckConfiguration(
-          widget.spellCheckConfiguration,
+          widget._spellCheckConfiguration,
         );
     }
 
@@ -1722,8 +1796,8 @@ class _TextFieldState extends State<TextField>
         child: EditableText(
           key: editableTextKey,
           readOnly: widget.readOnly || !_isEnabled,
-          toolbarOptions: widget.toolbarOptions,
-          showCursor: widget.showCursor,
+          toolbarOptions: widget._toolbarOptions,
+          showCursor: widget._showCursor,
           showSelectionHandles: _showSelectionHandles,
           controller: controller,
           focusNode: focusNode,
@@ -1732,31 +1806,31 @@ class _TextFieldState extends State<TextField>
           textInputAction: widget.textInputAction,
           textCapitalization: widget.textCapitalization,
           style: style,
-          strutStyle: widget.strutStyle,
+          strutStyle: widget._strutStyle,
           textAlign: widget.textAlign,
-          textDirection: widget.textDirection,
-          autofocus: widget.autofocus,
-          obscuringCharacter: widget.obscuringCharacter,
+          textDirection: widget._textDirection,
+          autofocus: widget._autofocus,
+          obscuringCharacter: widget._obscuringCharacter,
           obscureText: widget.obscureText,
           autocorrect: widget.autocorrect,
           smartDashesType: widget.smartDashesType,
           smartQuotesType: widget.smartQuotesType,
           enableSuggestions: widget.enableSuggestions,
           maxLines: widget.maxLines,
-          minLines: widget.minLines,
-          expands: widget.expands,
+          minLines: widget._minLines,
+          expands: widget._expands,
           // Only show the selection highlight when the text field is focused.
           selectionColor: focusNode.hasFocus ? selectionColor : null,
           selectionControls: widget.selectionEnabled ? textSelectionControls : null,
-          onChanged: widget.onChanged,
+          onChanged: widget._onChanged,
           onSelectionChanged: _handleSelectionChanged,
           onEditingComplete: widget.onEditingComplete,
-          onSubmitted: widget.onSubmitted,
+          onSubmitted: widget._onSubmitted,
           onAppPrivateCommand: widget.onAppPrivateCommand,
-          groupId: widget.groupId,
+          groupId: widget._groupId,
           onSelectionHandleTapped: _handleSelectionHandleTapped,
-          onTapOutside: widget.onTapOutside,
-          onTapUpOutside: widget.onTapUpOutside,
+          onTapOutside: widget._onTapOutside,
+          onTapUpOutside: widget._onTapUpOutside,
           inputFormatters: formatters,
           rendererIgnoresPointer: true,
           mouseCursor: MouseCursor.defer, // TextField will handle the cursor
@@ -1770,10 +1844,10 @@ class _TextFieldState extends State<TextField>
           cursorOffset: cursorOffset,
           paintCursorAboveText: paintCursorAboveText,
           backgroundCursorColor: CupertinoColors.inactiveGray,
-          scrollPadding: widget.scrollPadding,
+          scrollPadding: widget._scrollPadding,
           keyboardAppearance: keyboardAppearance,
           enableInteractiveSelection: widget.enableInteractiveSelection,
-          selectAllOnFocus: widget.selectAllOnFocus,
+          selectAllOnFocus: widget._selectAllOnFocus,
           dragStartBehavior: widget.dragStartBehavior,
           scrollController: widget.scrollController,
           scrollPhysics: widget.scrollPhysics,
@@ -1783,11 +1857,11 @@ class _TextFieldState extends State<TextField>
           clipBehavior: widget.clipBehavior,
           restorationId: 'editable',
           scribbleEnabled: widget.scribbleEnabled,
-          stylusHandwritingEnabled: widget.stylusHandwritingEnabled,
-          enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
+          stylusHandwritingEnabled: widget._stylusHandwritingEnabled,
+          enableIMEPersonalizedLearning: widget._enableIMEPersonalizedLearning,
           enableInlinePrediction: widget.enableInlinePrediction,
           contentInsertionConfiguration: widget.contentInsertionConfiguration,
-          contextMenuBuilder: widget.contextMenuBuilder,
+          contextMenuBuilder: widget._contextMenuBuilder,
           spellCheckConfiguration: spellCheckConfiguration,
           magnifierConfiguration:
               widget.magnifierConfiguration ?? TextMagnifier.adaptiveMagnifierConfiguration,
@@ -1808,7 +1882,7 @@ class _TextFieldState extends State<TextField>
             isHovering: _isHovering,
             isFocused: focusNode.hasFocus,
             isEmpty: controller.value.text.isEmpty,
-            expands: widget.expands,
+            expands: widget._expands,
             child: child,
           );
         },
@@ -1816,15 +1890,15 @@ class _TextFieldState extends State<TextField>
       );
     }
     final MouseCursor effectiveMouseCursor = WidgetStateProperty.resolveAs<MouseCursor>(
-      widget.mouseCursor ?? WidgetStateMouseCursor.textable,
+      widget._mouseCursor ?? WidgetStateMouseCursor.textable,
       _statesController.value,
     );
 
     final int? semanticsMaxValueLength;
     if (_effectiveMaxLengthEnforcement != MaxLengthEnforcement.none &&
-        widget.maxLength != null &&
-        widget.maxLength! > 0) {
-      semanticsMaxValueLength = widget.maxLength;
+        widget._maxLength != null &&
+        widget._maxLength! > 0) {
+      semanticsMaxValueLength = widget._maxLength;
     } else {
       semanticsMaxValueLength = null;
     }
@@ -1835,7 +1909,7 @@ class _TextFieldState extends State<TextField>
       onExit: (PointerExitEvent event) => _handleHover(false),
       child: TextFieldTapRegion(
         child: IgnorePointer(
-          ignoring: widget.ignorePointers ?? !_isEnabled,
+          ignoring: widget._ignorePointers ?? !_isEnabled,
           child: AnimatedBuilder(
             animation: controller, // changes the _currentLength
             builder: (BuildContext context, Widget? child) {

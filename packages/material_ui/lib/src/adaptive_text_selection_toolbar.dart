@@ -25,7 +25,7 @@ import 'theme.dart';
 /// supported parent widget, such as:
 ///
 /// * [EditableText.contextMenuBuilder]
-/// * [TextField.contextMenuBuilder]
+/// * [TextField], via its `contextMenuBuilder` parameter
 /// * [CupertinoTextField.contextMenuBuilder]
 /// * [SelectionArea.contextMenuBuilder]
 /// * [SelectableText.contextMenuBuilder]
